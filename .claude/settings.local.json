@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__3826b1da-b212-45e2-9046-831082693e1d__get_metadata",
+      "mcp__3826b1da-b212-45e2-9046-831082693e1d__get_screenshot",
+      "Bash(Get-Content \"C:\\\\Users\\\\TANISHQ KAUL\\\\.claude\\\\projects\\\\C--Users-TANISHQ-KAUL-Desktop-mysathi\\\\45f6b572-0677-450e-970f-9540d15f2574\\\\tool-results\\\\mcp-3826b1da-b212-45e2-9046-831082693e1d-get_metadata-1778871058592.txt\")",
+      "Bash(Select-Object -First 5)",
+      "mcp__3826b1da-b212-45e2-9046-831082693e1d__get_variable_defs",
+      "mcp__3826b1da-b212-45e2-9046-831082693e1d__use_figma",
+      "mcp__3826b1da-b212-45e2-9046-831082693e1d__get_design_context",
+      "Bash(node -e \"const pkg = require\\('C:/Users/TANISHQ KAUL/Desktop/mysathi/node_modules/react-day-picker/package.json'\\); console.log\\(JSON.stringify\\({main: pkg.main, module: pkg.module, exports: pkg.exports}, null, 2\\)\\)\")",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(npx tsc *)"
+    ]
+  }
+}
