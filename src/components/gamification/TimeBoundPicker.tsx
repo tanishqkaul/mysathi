@@ -117,12 +117,11 @@ export function TimeBoundPicker() {
                 selected={selectedDate}
                 onSelect={handleSelect}
                 disabled={{ before: tomorrow }}
-                fromMonth={new Date()}
                 showOutsideDays={false}
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 classNames={{
                   months: 'flex flex-col',
                   month: 'space-y-3',
-                  caption: 'flex justify-between items-center px-1',
                   caption_label: 'text-sm font-semibold text-gray-900',
                   nav: 'flex gap-1',
                   nav_button: 'h-7 w-7 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition-colors disabled:opacity-30 disabled:cursor-not-allowed',
@@ -138,7 +137,7 @@ export function TimeBoundPicker() {
                   day_disabled: 'text-gray-300 cursor-not-allowed hover:bg-transparent',
                   day_range_middle: 'aria-selected:bg-primary-light aria-selected:text-primary',
                   day_hidden: 'invisible',
-                }}
+                } as any}
               />
               <p className="text-xs text-gray-400 mt-2 pt-2 border-t border-gray-100">
                 Only future dates are selectable

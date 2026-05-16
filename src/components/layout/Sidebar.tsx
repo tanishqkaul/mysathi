@@ -56,6 +56,7 @@ interface SidebarProps {
 }
 
 function NavItemRow({ label, renderIcon, active, onClick }: {
+  id?: string;
   label: string;
   renderIcon: (color: string) => React.ReactNode;
   active: boolean;
