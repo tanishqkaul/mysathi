@@ -1,5 +1,7 @@
-import { Bell, ChevronRight } from 'lucide-react';
+import * as React from 'react';
+import { Bell, ChevronRight, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/context/AuthContext';
 
 interface TopNavItem {
   id: string;
@@ -44,6 +46,26 @@ export function Header({
   notificationCount = 5,
   avatarFallback = 'TK',
 }: HeaderProps) {
+  const { user, signOut } = useAuth();
+  const [menuOpen, setMenuOpen] = React.useState(false);
+  const menuRef = React.useRef<HTMLDivElement>(null);
+
+  const avatarUrl: string | undefined = user?.user_metadata?.avatar_url;
+  const displayFallback = user?.user_metadata?.full_name
+    ? user.user_metadata.full_name.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase()
+    : avatarFallback;
+
+  React.useEffect(() => {
+    if (!menuOpen) return;
+    const handler = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [menuOpen]);
+
   return (
     <header className="bg-white border-b border-gray-100 sticky top-0 z-20">
       {/* Top row: top-nav + actions */}
@@ -78,11 +100,37 @@ export function Header({
               </span>
             )}
           </button>
-          <button className="w-8 h-8 rounded-full overflow-hidden border-2 border-fuchsia-200">
-            <div className="w-full h-full bg-gradient-to-br from-fuchsia-400 to-purple-400 flex items-center justify-center">
-              <span className="text-white text-xs font-bold">{avatarFallback}</span>
-            </div>
-          </button>
+          <div className="relative" ref={menuRef}>
+            <button
+              onClick={() => setMenuOpen(v => !v)}
+              className="w-8 h-8 rounded-full overflow-hidden border-2 border-fuchsia-200 focus:outline-none"
+            >
+              {avatarUrl ? (
+                <img src={avatarUrl} alt="profile" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+              ) : (
+                <div className="w-full h-full bg-gradient-to-br from-fuchsia-400 to-purple-400 flex items-center justify-center">
+                  <span className="text-white text-xs font-bold">{displayFallback}</span>
+                </div>
+              )}
+            </button>
+
+            {menuOpen && (
+              <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-50">
+                {user?.email && (
+                  <div className="px-4 py-2 border-b border-gray-100">
+                    <p className="text-xs text-gray-400 truncate">{user.email}</p>
+                  </div>
+                )}
+                <button
+                  onClick={() => { setMenuOpen(false); signOut(); }}
+                  className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors"
+                >
+                  <LogOut className="h-4 w-4" />
+                  Sign out
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

@@ -2,7 +2,9 @@ import * as React from 'react';
 import { CheckCircle } from 'lucide-react';
 import { Layout } from '@/components/layout/Layout';
 import { GamificationPage } from '@/pages/GamificationPage';
+import { LoginPage } from '@/pages/LoginPage';
 import { useGamification } from '@/hooks/useGamification';
+import { useAuth } from '@/context/AuthContext';
 import { cn } from '@/lib/utils';
 
 /** "Reward Created!" success badge (top-center, auto-dismisses) */
@@ -42,20 +44,29 @@ function ErrorToast({ message, onClose }: { message: string; onClose: () => void
 }
 
 export function App() {
+  const { user, loading } = useAuth();
   const [activeNav, setActiveNav] = React.useState('gamification');
   const { state, openModal, closeModal, clearSubmitError } = useGamification();
-
   const prevSuccess = React.useRef(false);
 
-  // When submit succeeds: show badge then close modal
   React.useEffect(() => {
+    if (!user) return;
     if (state.ui.submitSuccess && !prevSuccess.current) {
-      // Modal already shows nothing (submitSuccess guard), close after badge timeout
       const t = setTimeout(() => closeModal(), 3200);
       return () => clearTimeout(t);
     }
     prevSuccess.current = state.ui.submitSuccess;
-  }, [state.ui.submitSuccess, closeModal]);
+  }, [state.ui.submitSuccess, closeModal, user]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="w-6 h-6 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (!user) return <LoginPage />;
 
   return (
     <Layout activeNav={activeNav} onNavigate={id => { setActiveNav(id); if (id === 'gamification') openModal(); }}>
