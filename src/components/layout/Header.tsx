@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Bell, ChevronRight, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
+import { SathiLogo } from './Sidebar';
 
 interface TopNavItem {
   id: string;
@@ -70,8 +71,13 @@ export function Header({
     <header className="bg-white border-b border-gray-100 sticky top-0 z-20">
       {/* Top row: top-nav + actions */}
       <div className="flex items-center justify-between px-4 sm:px-8 h-12 sm:h-14">
+        {/* Mobile logo — hidden on desktop where sidebar shows the logo */}
+        <div className="lg:hidden">
+          <SathiLogo />
+        </div>
+
         {/* Top nav */}
-        <nav className="hidden sm:flex items-center gap-2">
+        <nav className="hidden lg:flex items-center gap-2">
           {topNavItems.map((item, i) => (
             <div key={item.id} className="flex items-center gap-2">
               {i > 0 && <ChevronRight className="h-3.5 w-3.5 text-gray-300 shrink-0" />}
@@ -91,7 +97,7 @@ export function Header({
         </nav>
 
         {/* Right actions */}
-        <div className="flex items-center gap-3 mr-[9.13rem]">
+        <div className="flex items-center gap-3 mr-0 lg:mr-[9.13rem]">
           <button className="relative p-1.5 rounded-lg hover:bg-gray-100 transition-colors">
             <Bell className="h-5 w-5 text-gray-500" />
             {notificationCount > 0 && (

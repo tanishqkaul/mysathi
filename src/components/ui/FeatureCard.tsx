@@ -10,8 +10,8 @@ interface FeatureCardProps {
 export function FeatureCard({ icon, title, description }: FeatureCardProps) {
   return (
     <div
-      className="bg-white relative rounded-lg overflow-hidden flex flex-col items-center text-center pt-6 pb-6 px-4"
-      style={{ width: '18.25rem', height: '12.5rem', border: '1px solid #fee7fe', boxShadow: '0px 7px 10px 0px rgba(0,0,0,0.05)' }}
+      className="bg-white relative rounded-lg overflow-hidden flex flex-col items-center text-center pt-6 pb-6 px-4 w-full"
+      style={{ minHeight: '12.5rem', border: '1px solid #fee7fe', boxShadow: '0px 7px 10px 0px rgba(0,0,0,0.05)' }}
     >
       {/* Blob decoration — exact Figma positioning */}
       <CardBlob />

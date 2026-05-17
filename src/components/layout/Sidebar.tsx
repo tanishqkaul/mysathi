@@ -78,7 +78,7 @@ function NavItemRow({ label, renderIcon, active, onClick }: {
   );
 }
 
-function SathiLogo() {
+export function SathiLogo() {
   return (
     <svg width="105" height="26" viewBox="0 0 140 35" fill="none" style={{ maxWidth: '100%', height: 'auto' }}>
       <g clipPath="url(#clip0_5013_529)">

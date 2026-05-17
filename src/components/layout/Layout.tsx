@@ -13,9 +13,9 @@ export function Layout({ children, activeNav = 'gamification', onNavigate }: Lay
   return (
     <div className="flex min-h-screen bg-white">
       <Sidebar activeId={activeNav} onNavigate={onNavigate} />
-      <div className="flex-1 flex flex-col ml-0 lg:ml-[200px] pb-16 lg:pb-0">
+      <div className="flex-1 min-w-0 flex flex-col ml-0 lg:ml-[200px] pb-16 lg:pb-0">
         <Header activeSubNav="gamification" />
-        <main className="flex-1">{children}</main>
+        <main className="flex-1 min-w-0">{children}</main>
       </div>
       <BottomNav activeId={activeNav} onNavigate={onNavigate} />
     </div>

@@ -209,8 +209,8 @@ export function GamificationModal({ isOpen }: GamificationModalProps) {
 
   if (reward.isTierPanelOpen) {
     return (
-      <div className="fixed inset-0 z-50 flex items-end sm:items-start sm:pt-[3.5rem] justify-center" style={{ backdropFilter: 'blur(2px)', backgroundColor: 'rgba(0,0,0,0.25)' }}>
-        <div className="bg-white w-full rounded-t-lg rounded-b-none sm:rounded-lg sm:max-w-[22rem] sm:mx-4 max-h-[90vh] shadow-2xl animate-modal-in flex flex-col">
+      <div className="fixed inset-0 z-50 flex items-start pt-[3.5rem] justify-center" style={{ backdropFilter: 'blur(2px)', backgroundColor: 'rgba(0,0,0,0.25)' }}>
+        <div className="bg-white w-full mx-4 rounded-xl sm:rounded-lg sm:max-w-[22rem] max-h-[90vh] shadow-2xl animate-modal-in flex flex-col">
           <CommissionTierPanel
             selectedTier={reward.params.tierName ?? null}
             onSelect={tier => setRewardParam('tierName', tier)}
@@ -233,11 +233,11 @@ export function GamificationModal({ isOpen }: GamificationModalProps) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end sm:items-start sm:pt-[3.5rem] justify-center animate-fade-in"
+      className="fixed inset-0 z-50 flex items-start pt-[3.5rem] justify-center animate-fade-in"
       style={{ backdropFilter: 'blur(2px)', backgroundColor: 'rgba(0,0,0,0.25)' }}
       onClick={(e) => { if (e.target === e.currentTarget) closeModal(); }}
     >
-      <div className="bg-white w-full rounded-t-lg rounded-b-none sm:rounded-lg sm:max-w-[22rem] sm:mx-4 max-h-[90vh] shadow-2xl animate-modal-in flex flex-col">
+      <div className="bg-white w-full mx-4 rounded-xl sm:rounded-lg sm:max-w-[22rem] max-h-[90vh] shadow-2xl animate-modal-in flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-gray-100 flex-shrink-0">
           <h2 className="text-base font-semibold text-gray-900">Create your reward system</h2>
