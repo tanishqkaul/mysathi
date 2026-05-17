@@ -104,8 +104,8 @@ export function DropdownField({
           isOpen
             ? 'border-2 border-[#C530C5]'
             : error
-              ? 'border border-red-400'
-              : 'border border-gray-200 hover:border-gray-300',
+              ? 'border-2 border-red-400'
+              : 'border-2 border-gray-200 hover:border-gray-300',
         )}
         aria-haspopup="listbox"
         aria-expanded={isOpen}

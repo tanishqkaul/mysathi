@@ -90,7 +90,7 @@ export function GamificationModal({ isOpen }: GamificationModalProps) {
                       type="button"
                       className={cn(
                         'w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-all bg-white',
-                        calendarOpen ? 'border-2 border-[#C530C5]' : 'border border-gray-200 hover:border-gray-300'
+                        calendarOpen ? 'border-2 border-[#C530C5]' : 'border-2 border-gray-200 hover:border-gray-300'
                       )}
                     >
                       <CalendarIconSvg style={{ width: '1.5625rem', height: '1.5rem', flexShrink: 0, color: '#4A4A4A' }} />

@@ -47,7 +47,7 @@ export function EventSection() {
             onKeyDown={e => { if (e.key === 'Enter' && canSaveEvent) { e.preventDefault(); handleSave(); } }}
             className={cn(
               'w-full pl-7 pr-3 py-2 text-sm rounded-lg border transition-colors',
-              'focus:outline-none focus:border-2 focus:border-[#C530C5]',
+              'focus:outline-none focus:border-[#C530C5]',
               ui.validationErrors.amount ? 'border-red-400 bg-red-50' : 'border-gray-200 hover:border-gray-300'
             )}
             autoFocus
@@ -70,7 +70,7 @@ export function EventSection() {
             onChange={e => setEventParam('times', e.target.value)}
             onClick={e => e.stopPropagation()}
             onKeyDown={e => { if (e.key === 'Enter' && canSaveEvent) { e.preventDefault(); handleSave(); } }}
-            className="w-[4.5rem] shrink-0 px-3 py-2 text-sm rounded-lg border border-gray-200 hover:border-gray-300 focus:outline-none focus:border-2 focus:border-[#C530C5]"
+            className="w-[4.5rem] shrink-0 px-3 py-2 text-sm rounded-lg border border-gray-200 hover:border-gray-300 focus:outline-none focus:border-[#C530C5]"
             autoFocus
           />
           <div className="flex-1 min-w-0" onClick={e => e.stopPropagation()}>

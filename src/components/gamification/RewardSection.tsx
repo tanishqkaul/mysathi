@@ -43,7 +43,7 @@ export function RewardSection() {
             onKeyDown={e => { if (e.key === 'Enter' && canSaveReward) { e.preventDefault(); handleSave(); } }}
             className={cn(
               'w-full pl-7 pr-3 py-2 text-sm rounded-lg border transition-colors',
-              'focus:outline-none focus:border-2 focus:border-[#C530C5]',
+              'focus:outline-none focus:border-[#C530C5]',
               ui.validationErrors.rewardAmount ? 'border-red-400 bg-red-50' : 'border-gray-200 hover:border-gray-300'
             )}
             autoFocus
