@@ -2,6 +2,7 @@ import * as React from 'react';
 import { format, addDays, startOfDay } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { Spinner } from '@/components/ui/Spinner';
+import CalendarIconSvg from '@/assets/icons/calendar.svg?react';
 import { Switch } from '@/components/ui/switch';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar as CalendarPicker } from '@/components/ui/calendar';
@@ -11,22 +12,6 @@ import { EventSection } from './EventSection';
 import { RewardSection } from './RewardSection';
 import { CommissionTierPanel } from './CommissionTierPanel';
 
-// Kept local — only used by the calendar trigger
-function CalendarIcon() {
-  return (
-    <svg viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: '1.5625rem', height: '1.5rem', flexShrink: 0 }}>
-      <g clipPath="url(#cal-clip)">
-        <path d="M4.16667 7C4.16667 6.46957 4.38617 5.96086 4.77687 5.58579C5.16757 5.21071 5.69747 5 6.25001 5H18.75C19.3025 5 19.8324 5.21071 20.2231 5.58579C20.6138 5.96086 20.8333 6.46957 20.8333 7V19C20.8333 19.5304 20.6138 20.0391 20.2231 20.4142C19.8324 20.7893 19.3025 21 18.75 21H6.25001C5.69747 21 5.16757 20.7893 4.77687 20.4142C4.38617 20.0391 4.16667 19.5304 4.16667 19V7Z" stroke="#4A4A4A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M16.6667 3V7" stroke="#4A4A4A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M8.33333 3V7" stroke="#4A4A4A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M4.16667 11H20.8333" stroke="#4A4A4A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-      </g>
-      <defs>
-        <clipPath id="cal-clip"><rect width="25" height="24" fill="white"/></clipPath>
-      </defs>
-    </svg>
-  );
-}
 
 interface GamificationModalProps {
   isOpen: boolean;
@@ -108,7 +93,7 @@ export function GamificationModal({ isOpen }: GamificationModalProps) {
                         calendarOpen ? 'border-2 border-[#C530C5]' : 'border border-gray-200 hover:border-gray-300'
                       )}
                     >
-                      <CalendarIcon />
+                      <CalendarIconSvg style={{ width: '1.5625rem', height: '1.5rem', flexShrink: 0, color: '#4A4A4A' }} />
                       <span className={selectedDate ? 'text-gray-900 font-medium' : 'text-gray-400'}>
                         {selectedDate ? format(selectedDate, 'd MMM, yyyy') : 'Select End Date'}
                       </span>
