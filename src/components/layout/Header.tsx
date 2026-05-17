@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Bell, ChevronRight, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
+import { Button } from '@/components/ui/Button';
 import { SathiLogo } from './Sidebar';
 
 interface TopNavItem {
@@ -127,13 +128,14 @@ export function Header({
                     <p className="text-xs text-gray-400 truncate">{user.email}</p>
                   </div>
                 )}
-                <button
+                <Button
+                  variant="ghost"
                   onClick={() => { setMenuOpen(false); signOut(); }}
-                  className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors"
+                  className="w-full justify-start gap-2 px-4 py-2.5 h-auto text-sm text-red-500 hover:bg-red-50 hover:text-red-500 rounded-none"
                 >
                   <LogOut className="h-4 w-4" />
                   Sign out
-                </button>
+                </Button>
               </div>
             )}
           </div>

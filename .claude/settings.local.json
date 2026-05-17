@@ -10,7 +10,11 @@
       "mcp__3826b1da-b212-45e2-9046-831082693e1d__get_design_context",
       "Bash(node -e \"const pkg = require\\('C:/Users/TANISHQ KAUL/Desktop/mysathi/node_modules/react-day-picker/package.json'\\); console.log\\(JSON.stringify\\({main: pkg.main, module: pkg.module, exports: pkg.exports}, null, 2\\)\\)\")",
       "mcp__Claude_Preview__preview_start",
-      "Bash(npx tsc *)"
+      "Bash(npx tsc *)",
+      "mcp__Claude_in_Chrome__javascript_tool",
+      "PowerShell($f = \"C:\\\\Users\\\\TANISHQ KAUL\\\\Desktop\\\\mysathi\\\\src\\\\components\\\\ui\\\\GridBackground.tsx\"; \\(Get-Item $f\\).LastWriteTime = Get-Date; Write-Output \"touched\")",
+      "PowerShell($proc = Get-NetTCPConnection -LocalPort 5173 -ErrorAction SilentlyContinue | Select-Object -First 1 -ExpandProperty OwningProcess; if \\($proc\\) { Stop-Process -Id $proc -Force; Write-Output \"Killed PID $proc\" } else { Write-Output \"Nothing on 5173\" })",
+      "PowerShell(Get-NetTCPConnection -State Listen | Where-Object { $_.LocalPort -in @\\(5173, 5174, 3000, 8080\\) } | Select-Object LocalPort, OwningProcess)"
     ]
   }
 }

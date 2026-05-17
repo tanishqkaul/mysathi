@@ -21,13 +21,16 @@ const mask2: React.CSSProperties = {
   maskSize: '2066.317px 1761.949px',
 };
 
+const GRID_FRAME_WIDTH = 960;
+const GRID_FRAME_HEIGHT = 322;
+
 export function GridBackground({ children }: { children?: React.ReactNode }) {
   return (
     <div className="relative w-full overflow-hidden" style={{ height: '20.125rem' }}>
-      {/* 960×322 grid visual — absolute so it never affects layout width */}
+      {/* Grid visual — absolute so it never affects layout width */}
       <div
         className="absolute overflow-hidden rounded-[16px] border border-[#e3e3e3] opacity-60"
-        style={{ width: 960, height: 322, left: '50%', top: 0, transform: 'translateX(-50%)' }}
+        style={{ width: GRID_FRAME_WIDTH, height: GRID_FRAME_HEIGHT, left: '50%', top: 0, transform: 'translateX(-50%)' }}
       >
         {/* Large 1440px grid container offset to centre inside 960px frame */}
         <div className="absolute overflow-hidden" style={{ left: -325.5, top: -81, width: 1440, height: 1024 }}>

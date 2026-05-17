@@ -35,17 +35,39 @@ export function buildRewardLabel(type: RewardType, params: Record<string, string
   }
 }
 
+const MAX_CURRENCY = 999_999;
+const MAX_TIMES = 9_999;
+
+function validatePositiveInteger(value: string | undefined, field: string, max: number): string | null {
+  if (!value?.trim()) return `${field} is required`;
+  const n = Number(value);
+  if (isNaN(n) || n <= 0) return 'Enter a valid positive number';
+  if (!Number.isInteger(n)) return 'Must be a whole number';
+  if (n > max) return `Maximum allowed is ${max.toLocaleString()}`;
+  return null;
+}
+
+function validatePositiveAmount(value: string | undefined, field: string): string | null {
+  if (!value?.trim()) return `${field} is required`;
+  const n = Number(value);
+  if (isNaN(n) || n <= 0) return 'Enter a valid positive number';
+  if (n > MAX_CURRENCY) return `Maximum allowed is ${MAX_CURRENCY.toLocaleString()}`;
+  return null;
+}
+
 export function validateEventParams(type: EventType, params: Record<string, string>): Record<string, string> {
   const errors: Record<string, string> = {};
   switch (type) {
-    case 'sales_cross_x':
-      if (!params.amount?.trim()) errors.amount = 'Amount is required';
-      else if (isNaN(Number(params.amount)) || Number(params.amount) <= 0) errors.amount = 'Enter a valid positive number';
+    case 'sales_cross_x': {
+      const err = validatePositiveAmount(params.amount, 'Amount');
+      if (err) errors.amount = err;
       break;
-    case 'post_x_times':
-      if (!params.times?.trim()) errors.times = 'Number of times is required';
-      else if (isNaN(Number(params.times)) || Number(params.times) <= 0) errors.times = 'Enter a valid positive number';
+    }
+    case 'post_x_times': {
+      const err = validatePositiveInteger(params.times, 'Number of times', MAX_TIMES);
+      if (err) errors.times = err;
       break;
+    }
     case 'is_onboarded':
       break;
   }
@@ -55,10 +77,11 @@ export function validateEventParams(type: EventType, params: Record<string, stri
 export function validateRewardParams(type: RewardType, params: Record<string, string>): Record<string, string> {
   const errors: Record<string, string> = {};
   switch (type) {
-    case 'flat_bonus':
-      if (!params.amount?.trim()) errors.rewardAmount = 'Amount is required';
-      else if (isNaN(Number(params.amount)) || Number(params.amount) <= 0) errors.rewardAmount = 'Enter a valid positive number';
+    case 'flat_bonus': {
+      const err = validatePositiveAmount(params.amount, 'Amount');
+      if (err) errors.rewardAmount = err;
       break;
+    }
     case 'commission_tier_upgrade':
       if (!params.tierName) errors.tierName = 'Please select a tier';
       break;

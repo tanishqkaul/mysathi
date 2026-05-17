@@ -1,17 +1,17 @@
 import * as React from 'react';
-import { X } from 'lucide-react';
 import { format, addDays, startOfDay } from 'date-fns';
-import { cn, buildEventLabel, buildRewardLabel } from '@/lib/utils';
-import { EVENT_OPTIONS, REWARD_OPTIONS, PERIOD_OPTIONS } from '@/types/gamification';
-import type { EventType, RewardType } from '@/types/gamification';
-import { DropdownField } from './DropdownField';
-import { CommissionTierPanel } from './CommissionTierPanel';
-import { FloatingSelect } from '@/components/ui/FloatingSelect';
+import { cn } from '@/lib/utils';
+import { Spinner } from '@/components/ui/Spinner';
 import { Switch } from '@/components/ui/switch';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar as CalendarPicker } from '@/components/ui/calendar';
 import { useGamification } from '@/hooks/useGamification';
+import { ModalHeader } from './ModalHeader';
+import { EventSection } from './EventSection';
+import { RewardSection } from './RewardSection';
+import { CommissionTierPanel } from './CommissionTierPanel';
 
+// Kept local — only used by the calendar trigger
 function CalendarIcon() {
   return (
     <svg viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: '1.5625rem', height: '1.5rem', flexShrink: 0 }}>
@@ -33,23 +33,11 @@ interface GamificationModalProps {
 }
 
 export function GamificationModal({ isOpen }: GamificationModalProps) {
-  const {
-    state,
-    closeModal,
-    setEventType, setEventParam, saveEvent, clearEventSave,
-    setRewardType, setRewardParam, saveReward, clearRewardSave, closeTierPanel,
-    toggleTimeBound, setExpiryDate,
-    createReward,
-  } = useGamification();
-
+  const { state, closeModal, toggleTimeBound, setExpiryDate, createReward, setRewardParam, saveReward, closeTierPanel } = useGamification();
   const { event, reward, timeBound, ui } = state;
 
-  // Local open/close state for the two dropdowns
-  const [eventOpen, setEventOpen] = React.useState(false);
-  const [rewardOpen, setRewardOpen] = React.useState(false);
   const [calendarOpen, setCalendarOpen] = React.useState(false);
   const [showTooltip, setShowTooltip] = React.useState(false);
-  const modalBodyRef = React.useRef<HTMLDivElement>(null);
 
   const tomorrow = addDays(startOfDay(new Date()), 1);
   const selectedDate = timeBound.expiryDate ? new Date(timeBound.expiryDate) : undefined;
@@ -62,151 +50,9 @@ export function GamificationModal({ isOpen }: GamificationModalProps) {
     return () => document.removeEventListener('keydown', handler);
   }, [isOpen, closeModal]);
 
-  if (!isOpen) return null;
+  if (!isOpen || ui.submitSuccess) return null;
 
-  /* ---------- helpers ---------- */
-
-  const handleEventSelect = (val: string) => {
-    const t = val as EventType;
-    setEventType(t);
-    // is_onboarded has no input — allow immediate save
-  };
-
-  const handleEventSave = () => {
-    saveEvent();
-    // check if save succeeded (no validation errors means isSaved will be true after dispatch)
-    // We close the dropdown optimistically; Redux validation will reopen via effect if needed
-    setEventOpen(false);
-  };
-
-  const handleRewardSelect = (val: string) => {
-    setRewardType(val as RewardType);
-    // Commission tier opens its own panel — dropdown stays open so user sees panel
-  };
-
-  const handleRewardSave = () => {
-    saveReward();
-    setRewardOpen(false);
-  };
-
-  // Build the current event saved label
-  const eventSavedLabel = event.isSaved && event.selectedType
-    ? buildEventLabel(event.selectedType, event.params)
-    : null;
-
-  // Build the current reward saved label
-  const rewardSavedLabel = reward.isSaved && reward.selectedType
-    ? buildRewardLabel(reward.selectedType, reward.params)
-    : null;
-
-  // Whether the event "Save" button should be enabled
-  const canSaveEvent = (() => {
-    if (!event.selectedType) return false;
-    if (event.selectedType === 'is_onboarded') return true;
-    if (event.selectedType === 'sales_cross_x') return !!event.params.amount?.trim() && Number(event.params.amount) > 0;
-    if (event.selectedType === 'post_x_times') return !!event.params.times?.trim() && Number(event.params.times) > 0 && !!event.params.period;
-    return false;
-  })();
-
-  const canSaveReward = (() => {
-    if (!reward.selectedType) return false;
-    if (reward.selectedType === 'flat_bonus') return !!reward.params.amount?.trim() && Number(reward.params.amount) > 0;
-    if (reward.selectedType === 'commission_tier_upgrade') return !!reward.params.tierName;
-    return false;
-  })();
-
-  /* ---------- inline inputs ---------- */
-
-  const eventInlineContent = (() => {
-    if (!event.selectedType || event.selectedType === 'is_onboarded') return null;
-
-    if (event.selectedType === 'sales_cross_x') {
-      return (
-        <div className="relative mt-1">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-medium text-gray-500">$</span>
-          <input
-            type="number"
-            min="1"
-            placeholder="e.g. 100"
-            value={event.params.amount ?? ''}
-            onChange={e => setEventParam('amount', e.target.value)}
-            onClick={e => e.stopPropagation()}
-            onKeyDown={e => { if (e.key === 'Enter' && canSaveEvent) { e.preventDefault(); handleEventSave(); } }}
-            className={cn(
-              'w-full pl-7 pr-3 py-2 text-sm rounded-lg border transition-colors',
-              'focus:outline-none focus:border-2 focus:border-[#C530C5]',
-              ui.validationErrors.amount ? 'border-red-400 bg-red-50' : 'border-gray-200 hover:border-gray-300'
-            )}
-            autoFocus
-          />
-          {ui.validationErrors.amount && (
-            <p className="text-xs text-red-500 mt-1">{ui.validationErrors.amount}</p>
-          )}
-        </div>
-      );
-    }
-
-    if (event.selectedType === 'post_x_times') {
-      return (
-        <div className="flex gap-2 mt-1">
-          <input
-            type="number"
-            min="1"
-            placeholder="e.g. 5"
-            value={event.params.times ?? ''}
-            onChange={e => setEventParam('times', e.target.value)}
-            onClick={e => e.stopPropagation()}
-            onKeyDown={e => { if (e.key === 'Enter' && canSaveEvent) { e.preventDefault(); handleEventSave(); } }}
-            className="w-[4.5rem] shrink-0 px-3 py-2 text-sm rounded-lg border border-gray-200 hover:border-gray-300 focus:outline-none focus:border-2 focus:border-[#C530C5]"
-            autoFocus
-          />
-          <div className="flex-1 min-w-0" onClick={e => e.stopPropagation()}>
-            <FloatingSelect
-              options={PERIOD_OPTIONS}
-              value={event.params.period ?? null}
-              onChange={val => {
-                const opt = PERIOD_OPTIONS.find(p => p.value === val);
-                setEventParam('period', val);
-                if (opt) setEventParam('periodLabel', opt.label);
-              }}
-              placeholder="Select duration"
-              className="py-2"
-            />
-          </div>
-        </div>
-      );
-    }
-    return null;
-  })();
-
-  const rewardInlineContent = (() => {
-    if (reward.selectedType === 'flat_bonus') {
-      return (
-        <div className="relative mt-1">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-medium text-gray-500">$</span>
-          <input
-            type="number"
-            min="1"
-            placeholder="e.g. 100"
-            value={reward.params.amount ?? ''}
-            onChange={e => setRewardParam('amount', e.target.value)}
-            onClick={e => e.stopPropagation()}
-            onKeyDown={e => { if (e.key === 'Enter' && canSaveReward) { e.preventDefault(); handleRewardSave(); } }}
-            className={cn(
-              'w-full pl-7 pr-3 py-2 text-sm rounded-lg border transition-colors',
-              'focus:outline-none focus:border-2 focus:border-[#C530C5]',
-              ui.validationErrors.rewardAmount ? 'border-red-400 bg-red-50' : 'border-gray-200 hover:border-gray-300'
-            )}
-            autoFocus
-          />
-        </div>
-      );
-    }
-    return null;
-  })();
-
-  /* ---------- render: tier panel ---------- */
-
+  // Tier panel replaces the main modal (same overlay, different content)
   if (reward.isTierPanelOpen) {
     return (
       <div className="fixed inset-0 z-50 flex items-start pt-[3.5rem] justify-center" style={{ backdropFilter: 'blur(2px)', backgroundColor: 'rgba(0,0,0,0.25)' }}>
@@ -214,22 +60,14 @@ export function GamificationModal({ isOpen }: GamificationModalProps) {
           <CommissionTierPanel
             selectedTier={reward.params.tierName ?? null}
             onSelect={tier => setRewardParam('tierName', tier)}
-            onGoBack={() => { closeTierPanel(); setRewardOpen(false); }}
-            onSave={() => { saveReward(); setRewardOpen(false); }}
+            onGoBack={() => closeTierPanel()}
+            onSave={() => saveReward()}
             onClose={closeModal}
           />
         </div>
       </div>
     );
   }
-
-  /* ---------- render: success state ---------- */
-
-  if (ui.submitSuccess) {
-    return null; // success is shown as toast in App.tsx; modal auto-closes
-  }
-
-  /* ---------- render: main modal ---------- */
 
   return (
     <div
@@ -238,60 +76,12 @@ export function GamificationModal({ isOpen }: GamificationModalProps) {
       onClick={(e) => { if (e.target === e.currentTarget) closeModal(); }}
     >
       <div className="bg-white w-full mx-4 rounded-xl sm:rounded-lg sm:max-w-[22rem] max-h-[90vh] shadow-2xl animate-modal-in flex flex-col">
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-gray-100 flex-shrink-0">
-          <h2 className="text-base font-semibold text-gray-900">Create your reward system</h2>
-          <button
-            onClick={closeModal}
-            className="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
-          >
-            <X className="h-4 w-4" />
-          </button>
-        </div>
+        <ModalHeader onClose={closeModal} />
 
         {/* Body */}
-        <div ref={modalBodyRef} className="px-6 pb-2 space-y-5 flex-1 overflow-y-auto">
-          {/* Reward event dropdown */}
-          <DropdownField
-            label="Reward event"
-            required
-            placeholder="Select an event"
-            options={EVENT_OPTIONS.map(o => ({ value: o.value, label: o.label }))}
-            pendingValue={event.selectedType}
-            savedLabel={eventSavedLabel}
-            isOpen={eventOpen && !event.isSaved}
-            onToggle={() => {
-              if (event.isSaved) { clearEventSave(); setEventOpen(true); }
-              else setEventOpen(p => !p);
-            }}
-            onClose={() => setEventOpen(false)}
-            onSelect={handleEventSelect}
-            onSave={handleEventSave}
-            canSave={canSaveEvent}
-            inlineContent={eventInlineContent}
-            error={ui.validationErrors.amount || ui.validationErrors.times}
-          />
-
-          {/* Reward with dropdown */}
-          <DropdownField
-            label="Reward with"
-            required
-            placeholder="Select a reward"
-            options={REWARD_OPTIONS.map(o => ({ value: o.value, label: o.label }))}
-            pendingValue={reward.selectedType}
-            savedLabel={rewardSavedLabel}
-            isOpen={rewardOpen && !reward.isSaved}
-            onToggle={() => {
-              if (reward.isSaved) { clearRewardSave(); setRewardOpen(true); }
-              else setRewardOpen(p => !p);
-            }}
-            onClose={() => setRewardOpen(false)}
-            onSelect={handleRewardSelect}
-            onSave={handleRewardSave}
-            canSave={canSaveReward}
-            inlineContent={rewardInlineContent}
-            error={ui.validationErrors.rewardAmount}
-          />
+        <div className="px-6 pb-2 space-y-5 flex-1 overflow-y-auto">
+          <EventSection />
+          <RewardSection />
 
           {/* Time-bound toggle */}
           <div className="space-y-3">
@@ -307,7 +97,6 @@ export function GamificationModal({ isOpen }: GamificationModalProps) {
               />
             </div>
 
-            {/* Date field */}
             {timeBound.enabled && (
               <div className="animate-fade-in">
                 <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
@@ -316,9 +105,7 @@ export function GamificationModal({ isOpen }: GamificationModalProps) {
                       type="button"
                       className={cn(
                         'w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-all bg-white',
-                        calendarOpen
-                          ? 'border-2 border-[#C530C5]'
-                          : 'border border-gray-200 hover:border-gray-300'
+                        calendarOpen ? 'border-2 border-[#C530C5]' : 'border border-gray-200 hover:border-gray-300'
                       )}
                     >
                       <CalendarIcon />
@@ -327,13 +114,7 @@ export function GamificationModal({ isOpen }: GamificationModalProps) {
                       </span>
                     </button>
                   </PopoverTrigger>
-                  <PopoverContent
-                    className="w-auto p-2 rounded-lg border-gray-200 shadow-2xl"
-                    align="start"
-                    side="bottom"
-                    sideOffset={4}
-                    avoidCollisions={false}
-                  >
+                  <PopoverContent className="w-auto p-2 rounded-lg border-gray-200 shadow-2xl" align="start" side="bottom" sideOffset={4} avoidCollisions={false}>
                     <CalendarPicker
                       mode="single"
                       selected={selectedDate}
@@ -341,9 +122,7 @@ export function GamificationModal({ isOpen }: GamificationModalProps) {
                       disabled={{ before: tomorrow }}
                       buttonVariant="outline"
                       className="p-0"
-                      classNames={{
-                        today: 'text-fuchsia-600 font-semibold bg-transparent',
-                      }}
+                      classNames={{ today: 'text-fuchsia-600 font-semibold bg-transparent' }}
                     />
                   </PopoverContent>
                 </Popover>
@@ -362,7 +141,6 @@ export function GamificationModal({ isOpen }: GamificationModalProps) {
             Cancel
           </button>
 
-          {/* Create Reward with tooltip */}
           <div
             className="flex-1 relative"
             onMouseEnter={() => !canCreate && setShowTooltip(true)}
@@ -376,22 +154,17 @@ export function GamificationModal({ isOpen }: GamificationModalProps) {
                 'w-full py-2.5 rounded-lg text-sm font-semibold text-white transition-all duration-150',
                 canCreate && !ui.isSubmitting
                   ? 'bg-fuchsia-500 hover:bg-fuchsia-600 active:scale-[0.98]'
-                  : 'bg-[#F68DF6] cursor-not-allowed'
+                  : 'bg-fuchsia-300 cursor-not-allowed'
               )}
             >
               {ui.isSubmitting ? (
                 <span className="flex items-center justify-center gap-2">
-                  <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                  </svg>
+                  <Spinner size="sm" />
                   Creating…
                 </span>
               ) : 'Create Reward'}
-
             </button>
 
-            {/* Tooltip */}
             {showTooltip && !canCreate && (
               <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-gray-900 text-white text-xs rounded-lg whitespace-nowrap animate-fade-in shadow-lg">
                 Choose a reward trigger and a reward to continue
@@ -401,7 +174,6 @@ export function GamificationModal({ isOpen }: GamificationModalProps) {
           </div>
         </div>
 
-        {/* Submit error */}
         {ui.submitError && (
           <div className="mx-6 mb-4 px-4 py-2 bg-red-50 border border-red-200 rounded-lg text-xs text-red-600 animate-fade-in">
             {ui.submitError}

@@ -1,6 +1,7 @@
 import { GridBackground } from '@/components/ui/GridBackground';
 import { FeatureCard } from '@/components/ui/FeatureCard';
 import { GiftIcon, CrownIcon, TicketSaleIcon } from '@/components/ui/FeatureIcons';
+import { Button } from '@/components/ui/Button';
 import { GamificationModal } from '@/components/gamification';
 import { useGamification } from '@/hooks/useGamification';
 
@@ -42,13 +43,13 @@ export function GamificationPage() {
           >
             Enable gamification to start crafting<br />your custom reward system.
           </p>
-          <button
+          <Button
             onClick={openModal}
-            className="mt-2 w-[310px] max-w-full h-10 active:scale-[0.98] text-white text-base transition-all duration-150"
-            style={{ backgroundColor: '#c530c5', borderRadius: 10, fontFamily: "'Inter', sans-serif" }}
+            className="mt-2 w-[310px] max-w-full h-10 active:scale-[0.98] rounded-[10px] bg-[#c530c5] hover:bg-[#a827a8] text-base font-normal"
+            style={{ fontFamily: "'Inter', sans-serif" }}
           >
             Enable Gamification
-          </button>
+          </Button>
         </div>
       </GridBackground>
 

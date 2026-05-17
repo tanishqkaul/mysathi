@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit';
 import type { GamificationState, EventType, RewardType } from '@/types/gamification';
-import { buildEventLabel, buildRewardLabel, validateEventParams, validateRewardParams } from '@/lib/utils';
-import { supabase } from '@/lib/supabase';
+import { validateEventParams, validateRewardParams } from '@/lib/utils';
+import { buildRewardPayload, createRewardRecord } from '@/services/rewardService';
 
 const initialState: GamificationState = {
   isModalOpen: false,
@@ -34,26 +34,15 @@ export const createReward = createAsyncThunk(
   'gamification/createReward',
   async (_, { getState, rejectWithValue }) => {
     const state = (getState() as { gamification: GamificationState }).gamification;
-    const { event, reward, timeBound } = state;
+    const { event, reward } = state;
     if (!event.selectedType || !reward.selectedType) return rejectWithValue('Incomplete');
 
-    const payload = {
-      event_type: event.selectedType,
-      event_params: event.params,
-      event_label: buildEventLabel(event.selectedType, event.params),
-      reward_type: reward.selectedType,
-      reward_params: reward.params,
-      reward_label: buildRewardLabel(reward.selectedType, reward.params),
-      is_time_bound: timeBound.enabled,
-      expires_at: timeBound.enabled ? timeBound.expiryDate : null,
-    };
-
     try {
-      const { data, error } = await supabase.from('rewards').insert(payload).select().single();
-      if (error) return rejectWithValue(error.message);
-      return data;
-    } catch {
-      return rejectWithValue('Network error. Please try again.');
+      const payload = buildRewardPayload(state);
+      return await createRewardRecord(payload);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Network error. Please try again.';
+      return rejectWithValue(message);
     }
   }
 );
