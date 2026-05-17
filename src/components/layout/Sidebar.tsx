@@ -39,7 +39,7 @@ function NavItemRow({ label, Icon, active, onClick }: {
       style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
     >
       <Icon width={20} height={20} style={{ color }} />
-      <span style={{ color }}>{label}</span>
+      <span style={{ color, fontVariantLigatures: 'no-common-ligatures' }}>{label}</span>
     </button>
   );
 }
