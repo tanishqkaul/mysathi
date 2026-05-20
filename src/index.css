@@ -29,6 +29,7 @@
   * {
     box-sizing: border-box;
     border-color: hsl(var(--border));
+    font-variant-ligatures: no-common-ligatures;
   }
 
   body {
